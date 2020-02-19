@@ -213,6 +213,7 @@ def parse_args(argv):
     return parser.parse_args(argv)
 
 if __name__ == '__main__':
+    #train --input-dims 224 224
     args = parse_args(sys.argv[1:])
     print(args)
     args.func(args)
