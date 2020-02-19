@@ -142,17 +142,17 @@ def parse_args(argv):
         help='GPUs to run training on. Exclude for cpu training')
 
     data_parent = argparse.ArgumentParser(add_help=False)
-    data_parent.add_argument('--dataset-path', type=str, required=True,
+    data_parent.add_argument('--dataset-path', type=str, default='pytorch',
         help='The path to the dataset, formatted with data in different directories based on label')
     data_parent.add_argument('--num-workers', type=int, default=1,
         help='The number of worker processes to use for loading/transforming data. Note that this spawns this amount of workers for both the test and train dataset.')
 
     model_parent = argparse.ArgumentParser(add_help=False)
-    model_parent.add_argument('--gradient-layer-name', type=str, required=True,
+    model_parent.add_argument('--gradient-layer-name', type=str, default='pytorch',
         help='The name of the layer to construct the heatmap from')
-    model_parent.add_argument('--model-type', type=str, required=True, choices=models.available_models,
+    model_parent.add_argument('--model-type', type=str, default='Darknet53', choices=models.available_models,
         help='The name of the underlying model to train')
-    model_parent.add_argument('--weights-file', type=str,
+    model_parent.add_argument('--weights-file', type=str,default=None,
         help='The full path to the .tar file containing model weights and metadata')
     model_parent.add_argument('--no-batch-norm', action='store_true',
         help='Use batch norm in the custom defined models')
@@ -186,9 +186,9 @@ def parse_args(argv):
     train_parser.add_argument('--output-dir', type=str, default='./out',
         help='The output directory for training runs. A subdirectory with the modelname and timestamp is created')
     # TODO dynamically retrieve expected input size???
-    train_parser.add_argument('--input-dims', type=int, nargs=2, required=True,
+    train_parser.add_argument('--input-dims', type=int, nargs=2, default='224',
         help='The dimensions to resize inputs to. Keep in mind that some models have a default input size. This is not used if the model is loaded from saved weights.')
-    train_parser.add_argument('--input-channels', type=int, required=True,
+    train_parser.add_argument('--input-channels', type=int, default='3',
         help='The number of channels the network should expect as input. This is not used if the model is loaded from saved weights.')
     train_parser.add_argument('--transformer', type=str, choices=transform.available_transformers,
         help='The transformer to use on training data')
@@ -198,9 +198,9 @@ def parse_args(argv):
     infer_parser = subparser.add_parser('infer', parents=[gpu_parent, model_parent],
         help='Run inference on a trained model')
     infer_parser.set_defaults(func=infer_handler)
-    infer_parser.add_argument('--image-path', type=str, required=True,
+    infer_parser.add_argument('--image-path', type=str, default='pytorch',
         help='The path to the image that you would like to classify')
-    infer_parser.add_argument('--heatmap-label', type=str, required=True,
+    infer_parser.add_argument('--heatmap-label', type=str, default='pytorch',
         help='If this is set, a heatmap is only generated for this label. Otherwise, a heatmap is generated for all labels')
     infer_parser.add_argument('--output-dir', type=str,
         help='The directory to save heatmap outputs')
@@ -208,9 +208,12 @@ def parse_args(argv):
     model_info_parser = subparser.add_parser('model', parents=[model_parent],
         help='Utility to print information about a model for easier layer selection')
     model_info_parser.set_defaults(func=model_info_handler)
-
+    # return model_info_parser
+    # return parser
     return parser.parse_args(argv)
 
 if __name__ == '__main__':
     args = parse_args(sys.argv[1:])
+    print(args)
     args.func(args)
+    # model_info_handler(args)
